@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpporTunité — Trouve ton opportunité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --vert: #00C896;
+  --vert-d: #009E76;
+  --fond: #0C1210;
+  --carte: #131A17;
+  --bord: #1C2420;
+  --texte: #E6EEE9;
+  --muted: #5A7268;
+  --amber: #F5A623;
+  --blue: #7B9FFF;
+  --pink: #FF7B9C;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--fond);color:var(--texte);min-height:100vh;overflow-x:hidden}
+
+/* BRUIT DE FOND */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.5}
+
+/* GLOW TOP */
+.glow-top{position:fixed;top:-120px;left:50%;transform:translateX(-50%);width:500px;height:300px;background:radial-gradient(ellipse,rgba(0,200,150,.07) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+/* HERO */
+.hero{position:relative;z-index:1;text-align:center;padding:52px 20px 36px}
+.badge{display:inline-flex;align-items:center;gap:7px;background:rgba(0,200,150,.08);border:1px solid rgba(0,200,150,.2);border-radius:100px;padding:5px 14px;font-size:11px;font-weight:500;color:var(--vert);letter-spacing:.07em;text-transform:uppercase;margin-bottom:24px}
+.badge-dot{width:6px;height:6px;background:var(--vert);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+h1{font-family:'Syne',sans-serif;font-size:clamp(30px,7vw,52px);font-weight:800;line-height:1.05;letter-spacing:-.025em;margin-bottom:14px}
+h1 em{font-style:normal;color:var(--vert)}
+.sub{color:var(--muted);font-size:15px;max-width:400px;margin:0 auto 8px;line-height:1.65;font-weight:300}
+
+/* STEPS */
+.steps{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:20px 0 0}
+.step{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.03);border:1px solid var(--bord);border-radius:100px;padding:5px 12px}
+.step-n{width:18px;height:18px;background:var(--vert);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#0C1210;flex-shrink:0}
+
+/* MAIN CONTAINER */
+.wrap{max-width:580px;margin:0 auto;padding:0 18px 80px;position:relative;z-index:1}
+
+/* FORM CARD */
+.card{background:var(--carte);border:1px solid var(--bord);border-radius:20px;padding:28px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:-1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--vert),transparent)}
+.card-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:22px;display:flex;align-items:center;gap:8px}
+.card-title-dot{width:8px;height:8px;background:var(--vert);border-radius:50%}
+
+.fg{margin-bottom:18px}
+label.lbl{display:block;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+input,select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--bord);border-radius:10px;padding:11px 14px;color:var(--texte);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .18s,background .18s;-webkit-appearance:none;appearance:none}
+input:focus,select:focus{border-color:var(--vert);background:rgba(0,200,150,.04)}
+input::placeholder{color:var(--muted)}
+select option{background:#141a17;color:var(--texte)}
+
+/* SELECT ARROW */
+.sel-wrap{position:relative}
+.sel-wrap::after{content:'↓';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px;pointer-events:none}
+
+/* CHECKBOX GRID */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.ci{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.03);border:1px solid var(--bord);border-radius:10px;padding:11px 13px;cursor:pointer;transition:all .15s;user-select:none}
+.ci:hover{border-color:rgba(0,200,150,.35);background:rgba(0,200,150,.04)}
+.ci.on{border-color:var(--vert);background:rgba(0,200,150,.07)}
+.ci input{width:15px;height:15px;accent-color:var(--vert);cursor:pointer;flex-shrink:0;margin:0}
+.ci span{font-size:13px;line-height:1.2}
+
+/* BTN */
+.btn{width:100%;background:var(--vert);color:#0C1210;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px;transition:all .18s;letter-spacing:.02em}
+.btn:hover{background:var(--vert-d);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--bord);margin:26px 0}
+
+/* RESULTS */
+.results{display:none}
+.results.on{display:block}
+.res-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px}
+.res-sub{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5}
+
+/* OPP CARD */
+.oc{background:rgba(255,255,255,.025);border:1px solid var(--bord);border-radius:13px;padding:16px 18px;margin-bottom:10px;transition:border-color .15s;position:relative;overflow:hidden}
+.oc:hover{border-color:rgba(0,200,150,.25)}
+.oc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.oc.bourse::before{background:var(--vert)}
+.oc.stage::before{background:var(--amber)}
+.oc.formation::before{background:var(--blue)}
+.oc.emploi::before{background:var(--pink)}
+.oc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:7px}
+.oc-nom{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;line-height:1.3}
+.oc-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:3px 9px;border-radius:100px;white-space:nowrap;flex-shrink:0}
+.tag-bourse{background:rgba(0,200,150,.15);color:var(--vert)}
+.tag-stage{background:rgba(245,166,35,.15);color:var(--amber)}
+.tag-formation{background:rgba(123,159,255,.15);color:var(--blue)}
+.tag-emploi{background:rgba(255,123,156,.15);color:var(--pink)}
+.oc-info{font-size:11px;color:var(--muted);margin-bottom:3px}
+.oc-mont{font-size:12px;color:var(--vert);font-weight:500}
+
+/* WA BUTTON */
+.btn-wa{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;background:#25D366;color:#fff;border:none;border-radius:12px;padding:15px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .18s;margin-top:18px}
+.btn-wa:hover{background:#1ebe59;transform:translateY(-1px)}
+.wa-svg{width:20px;height:20px;flex-shrink:0}
+
+/* CANAL BOX */
+.canal-box{background:rgba(0,200,150,.06);border:1px solid rgba(0,200,150,.18);border-radius:14px;padding:18px 20px;margin-top:16px;text-align:center}
+.canal-icon{font-size:28px;margin-bottom:8px}
+.canal-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:5px}
+.canal-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.btn-canal{display:inline-flex;align-items:center;gap:7px;background:var(--vert);color:#0C1210;border:none;border-radius:10px;padding:10px 20px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .18s}
+.btn-canal:hover{background:var(--vert-d)}
+
+.no-res{text-align:center;padding:24px;color:var(--muted);font-size:13px;line-height:1.6}
+
+footer{text-align:center;padding:16px;color:var(--muted);font-size:11px;position:relative;z-index:1}
+
+@media(max-width:440px){.cg{grid-template-columns:1fr}.card{padding:22px 16px}}
+</style>
+</head>
+<body>
+
+<div class="glow-top"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge"><span class="badge-dot"></span>Bénin · Afrique francophone</div>
+  <h1>Ton <em>opportunité</em><br>t'attend</h1>
+  <p class="sub">Bourses, stages, formations, emplois — filtrés selon ton profil et envoyés sur WhatsApp.</p>
+  <div class="steps">
+    <div class="step"><span class="step-n">1</span> Remplis ton profil</div>
+    <div class="step"><span class="step-n">2</span> Vois tes résultats</div>
+    <div class="step"><span class="step-n">3</span> Reçois sur WhatsApp</div>
+  </div>
+</div>
+
+<!-- FORMULAIRE -->
+<div class="wrap">
+<div class="card">
+  <div class="card-title"><span class="card-title-dot"></span>Ton profil</div>
+
+  <div class="fg">
+    <label class="lbl">Prénom</label>
+    <input id="prenom" type="text" placeholder="Ex : Kofi, Amina, Sèna…">
+  </div>
+
+  <div class="fg">
+    <label class="lbl">Numéro WhatsApp</label>
+    <input id="tel" type="tel" placeholder="+229 01 XX XX XX XX">
+  </div>
+
+  <div class="fg">
+    <label class="lbl">Niveau d'études</label>
+    <div class="sel-wrap">
+      <select id="niveau">
+        <option value="">Sélectionne ton niveau</option>
+        <option value="lycee">Lycéen / Terminale</option>
+        <option value="licence">Étudiant — Licence (Bac+1 à Bac+3)</option>
+        <option value="master">Étudiant — Master (Bac+4 à Bac+5)</option>
+        <option value="diplome">Diplômé sans emploi</option>
+        <option value="professionnel">Professionnel en activité</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="fg">
+    <label class="lbl">Domaine d'intérêt</label>
+    <div class="sel-wrap">
+      <select id="domaine">
+        <option value="">Sélectionne ton domaine</option>
+        <option value="tech">Sciences / Ingénierie / Tech / IA</option>
+        <option value="agri">Agriculture / AgriTech / Environnement</option>
+        <option value="business">Business / Économie / Gestion</option>
+        <option value="sante">Santé / Médecine / Pharmacie</option>
+        <option value="droit">Droit / Sciences sociales / Communication</option>
+        <option value="art">Art / Design / Créativité</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="fg">
+    <label class="lbl">Tu cherches quoi ?</label>
+    <div class="cg">
+      <label class="ci" id="lb-bourse">
+        <input type="checkbox" value="bourse" onchange="tick(this,'lb-bourse')">
+        <span>Bourse d'études</span>
+      </label>
+      <label class="ci" id="lb-stage">
+        <input type="checkbox" value="stage" onchange="tick(this,'lb-stage')">
+        <span>Stage professionnel</span>
+      </label>
+      <label class="ci" id="lb-formation">
+        <input type="checkbox" value="formation" onchange="tick(this,'lb-formation')">
+        <span>Formation certifiante</span>
+      </label>
+      <label class="ci" id="lb-emploi">
+        <input type="checkbox" value="emploi" onchange="tick(this,'lb-emploi')">
+        <span>Emploi / CDI</span>
+      </label>
+    </div>
+  </div>
+
+  <button class="btn" onclick="chercher()">Voir mes opportunités →</button>
+
+  <!-- RÉSULTATS -->
+  <div class="results" id="res">
+    <div class="divider"></div>
+    <div class="res-title" id="res-title"></div>
+    <div class="res-sub" id="res-sub"></div>
+    <div id="res-list"></div>
+
+    <!-- BTN WHATSAPP -->
+    <a class="btn-wa" id="wa-btn" href="#" target="_blank">
+      <svg class="wa-svg" viewBox="0 0 24 24" fill="white">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Recevoir sur WhatsApp
+    </a>
+
+    <!-- INVITATION CANAL -->
+    <div class="canal-box">
+      <div class="canal-icon">📢</div>
+      <div class="canal-title">Rejoins notre communauté bêta-testeurs</div>
+      <div class="canal-sub">Reçois chaque semaine les meilleures opportunités et aide-nous à améliorer la plateforme. Les membres actifs ont un accès premium offert au lancement.</div>
+      <a class="btn-canal" id="canal-btn" href="REMPLACE_PAR_TON_LIEN_CANAL" target="_blank">
+        Rejoindre le canal WhatsApp →
+      </a>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer>OpporTunité · Bénin 2025 · Fait pour la jeunesse africaine</footer>
+
+<script>
+// ══════════════════════════════════════════════
+//  🔧 CONFIGURATION — modifie ici uniquement
+// ══════════════════════════════════════════════
+const CONFIG = {
+  // Colle ton lien de canal WhatsApp ici :
+  lienCanal: "REMPLACE_PAR_TON_LIEN_CANAL",
+  // Ton numéro WhatsApp admin (pour recevoir les profils) :
+  // Ex: "22901XXXXXXXX" — sans + ni espaces
+  adminWA: "22901XXXXXXXX"
+};
+
+// ══════════════════════════════════════════════
+//  BASE DE DONNÉES — ajoute tes opportunités ici
+// ══════════════════════════════════════════════
+const DB = [
+  // BOURSES
+  {id:1,nom:"Erasmus Mundus — Union Européenne",type:"bourse",domaines:["tech","sante","agri","business","droit","art"],niveaux:["master"],pays:"Europe",montant:"1 400€/mois + frais couverts",deadline:"Janv–Avril",lien:"https://erasmus-plus.ec.europa.eu"},
+  {id:2,nom:"Chinese Government Scholarship (CSC)",type:"bourse",domaines:["tech","sante","agri","business","droit","art"],niveaux:["licence","master","diplome"],pays:"Chine",montant:"Scolarité + logement + allocation",deadline:"Déc–Avril",lien:"https://www.csc.edu.cn"},
+  {id:3,nom:"WASCAL — Allemagne + Afrique Ouest",type:"bourse",domaines:["tech","agri","sante"],niveaux:["master","diplome"],pays:"Afrique de l'Ouest",montant:"Scolarité + allocation + ordinateur",deadline:"Fév–Mars",lien:"https://wascal.org"},
+  {id:4,nom:"Invest Your Talent in Italy",type:"bourse",domaines:["tech","business","art"],niveaux:["master"],pays:"Italie",montant:"1 000€/mois + stage garanti",deadline:"Janv–Fév",lien:"https://investyourtalent.esteri.it"},
+  {id:5,nom:"Bourses ARES — Belgique",type:"bourse",domaines:["tech","sante","agri","droit"],niveaux:["master","diplome"],pays:"Belgique",montant:"Voyage + logement + subsistance",deadline:"Fév–Mars",lien:"https://www.ares-ac.be"},
+  {id:6,nom:"Banque Mondiale WBGSP",type:"bourse",domaines:["business","agri","droit","sante"],niveaux:["master","diplome"],pays:"Monde entier",montant:"Scolarité + billet + allocation",deadline:"Déc–Jan",lien:"https://www.worldbank.org"},
+  {id:7,nom:"JADS — BAD + Japon",type:"bourse",domaines:["tech","agri","sante"],niveaux:["master"],pays:"Japon",montant:"Financement complet 2 ans",deadline:"Mars–Avril",lien:"https://www.afdb.org"},
+  {id:8,nom:"Institut Vecteur IA — Canada",type:"bourse",domaines:["tech"],niveaux:["master","diplome"],pays:"Canada",montant:"17 500 CAD/an",deadline:"Janv–Mars",lien:"https://vectorinstitute.ai"},
+  {id:9,nom:"Bourses Québec Métiers d'Avenir",type:"bourse",domaines:["tech","sante","agri"],niveaux:["lycee","licence"],pays:"Canada (Québec)",montant:"14 000–26 600 CAD",deadline:"Juin–Juillet",lien:"https://www.quebec.ca"},
+  {id:10,nom:"I&P Éducation & Emploi",type:"bourse",domaines:["tech","business","agri","art"],niveaux:["licence","diplome","professionnel"],pays:"Bénin / Afrique",montant:"Financement variable",deadline:"Toute l'année",lien:"https://www.ietp.com"},
+
+  // STAGES
+  {id:11,nom:"Stage PNUD Bénin",type:"stage",domaines:["droit","business","agri","sante","tech"],niveaux:["licence","master","diplome"],pays:"Cotonou, Bénin",montant:"Expérience certifiée ONU",deadline:"Toute l'année",lien:"https://www.undp.org/benin"},
+  {id:12,nom:"Stage Banque Africaine de Développement",type:"stage",domaines:["business","tech","agri","droit"],niveaux:["master","diplome"],pays:"Abidjan / distanciel",montant:"Allocation mensuelle",deadline:"Jan & Juil",lien:"https://www.afdb.org"},
+  {id:13,nom:"Stage AFD Bénin",type:"stage",domaines:["agri","business","droit","sante"],niveaux:["master","diplome"],pays:"Cotonou, Bénin",montant:"Gratifié selon profil",deadline:"Toute l'année",lien:"https://www.afd.fr"},
+  {id:14,nom:"Google BOLD Internship",type:"stage",domaines:["tech","business"],niveaux:["licence","master"],pays:"Distanciel / Monde",montant:"Rémunéré",deadline:"Oct–Nov",lien:"https://careers.google.com"},
+  {id:15,nom:"Microsoft LEAP Program",type:"stage",domaines:["tech"],niveaux:["licence","master","diplome"],pays:"Distanciel",montant:"Rémunéré",deadline:"Fév–Mars",lien:"https://careers.microsoft.com"},
+
+  // FORMATIONS
+  {id:16,nom:"AU Digital & Innovation Fellowship",type:"formation",domaines:["tech","business"],niveaux:["licence","master","diplome"],pays:"Éthiopie + Allemagne",montant:"2 500€/mois pendant 12 mois",deadline:"Avril–Mai",lien:"https://au.int"},
+  {id:17,nom:"Google Career Certificates",type:"formation",domaines:["tech","business"],niveaux:["lycee","licence","diplome","professionnel"],pays:"En ligne (gratuit)",montant:"Gratuit",deadline:"Toute l'année",lien:"https://grow.google/certificates"},
+  {id:18,nom:"CISCO Networking Academy",type:"formation",domaines:["tech"],niveaux:["lycee","licence","master","diplome"],pays:"En ligne + Bénin",montant:"Gratuit",deadline:"Toute l'année",lien:"https://www.netacad.com"},
+  {id:19,nom:"Formation AgriTech — FRAGG",type:"formation",domaines:["agri","business"],niveaux:["lycee","licence","diplome","professionnel"],pays:"Bénin / Afrique Ouest",montant:"Financé",deadline:"Toute l'année",lien:"https://fragg.org"},
+  {id:20,nom:"Coursera for Campus",type:"formation",domaines:["tech","business","sante","droit","art"],niveaux:["lycee","licence","master"],pays:"En ligne",montant:"Gratuit via université",deadline:"Toute l'année",lien:"https://www.coursera.org/campus"},
+
+  // EMPLOIS
+  {id:21,nom:"Emplois ONU — UN Careers",type:"emploi",domaines:["droit","business","sante","agri","tech"],niveaux:["master","diplome","professionnel"],pays:"International / Cotonou",montant:"Salaire international",deadline:"Toute l'année",lien:"https://careers.un.org"},
+  {id:22,nom:"Emplois ANPE Bénin",type:"emploi",domaines:["tech","business","agri","sante","droit","art"],niveaux:["lycee","licence","master","diplome","professionnel"],pays:"Bénin",montant:"Variable",deadline:"Toute l'année",lien:"https://anpe.bj"},
+  {id:23,nom:"BAD — Programme Jeunes Professionnels",type:"emploi",domaines:["business","tech","agri","droit"],niveaux:["master","diplome","professionnel"],pays:"Afrique",montant:"Salaire compétitif",deadline:"Toute l'année",lien:"https://www.afdb.org/careers"},
+  {id:24,nom:"Jeunes Experts Associés — AFD",type:"emploi",domaines:["agri","business","droit","sante"],niveaux:["master","diplome"],pays:"France + Bénin",montant:"2 500–3 500€/mois",deadline:"Avril–Juin",lien:"https://www.afd.fr"},
+  {id:25,nom:"Startup Hub Innovation — Afrique Ouest",type:"emploi",domaines:["tech","business","art"],niveaux:["licence","master","diplome","professionnel"],pays:"Afrique de l'Ouest",montant:"Variable",deadline:"Toute l'année",lien:"https://cipmen.org"},
+];
+
+function tick(cb, id) {
+  document.getElementById(id).classList.toggle('on', cb.checked);
+}
+
+function types() {
+  return [...document.querySelectorAll('.ci input:checked')].map(c => c.value);
+}
+
+function chercher() {
+  const prenom  = document.getElementById('prenom').value.trim();
+  const tel     = document.getElementById('tel').value.trim();
+  const niveau  = document.getElementById('niveau').value;
+  const domaine = document.getElementById('domaine').value;
+  const choix   = types();
+
+  if (!prenom || !tel || !niveau || !domaine || choix.length === 0) {
+    alert('Merci de remplir tous les champs et de cocher au moins un type d\'opportunité 🙏');
+    return;
+  }
+
+  const resultats = DB.filter(o =>
+    choix.includes(o.type) &&
+    o.domaines.includes(domaine) &&
+    o.niveaux.includes(niveau)
+  );
+
+  // Mise à jour UI
+  document.getElementById('res-title').textContent = resultats.length > 0
+    ? `${resultats.length} opportunité${resultats.length > 1 ? 's' : ''} pour toi, ${prenom} 🎯`
+    : `Aucun résultat pour ce profil`;
+
+  document.getElementById('res-sub').textContent = resultats.length > 0
+    ? `Clique sur "Recevoir sur WhatsApp" pour les avoir dans ta messagerie avec tous les détails et liens officiels.`
+    : `Essaie de modifier ton domaine ou ton niveau — on ajoute de nouvelles opportunités chaque semaine.`;
+
+  const list = document.getElementById('res-list');
+  list.innerHTML = '';
+
+  if (resultats.length === 0) {
+    list.innerHTML = '<div class="no-res">Modifie tes critères pour voir des résultats.<br>Notre base est mise à jour chaque semaine 💪</div>';
+  } else {
+    resultats.forEach(o => {
+      list.innerHTML += `
+        <div class="oc ${o.type}">
+          <div class="oc-top">
+            <div class="oc-nom">${o.nom}</div>
+            <span class="oc-tag tag-${o.type}">${o.type}</span>
+          </div>
+          <div class="oc-info">📍 ${o.pays} &nbsp;·&nbsp; ⏰ ${o.deadline}</div>
+          <div class="oc-mont">💰 ${o.montant}</div>
+        </div>`;
+    });
+  }
+
+  // Construire le message WhatsApp personnalisé
+  const numNet = tel.replace(/[\s\-().]/g,'').replace(/^\+/,'');
+  let msg = `Bonjour *${prenom}* 👋\n\n`;
+
+  if (resultats.length > 0) {
+    msg += `Voici tes *${resultats.length} opportunité${resultats.length>1?'s':''}* personnalisées sur *OpporTunité* :\n\n`;
+    resultats.forEach((o,i) => {
+      msg += `*${i+1}. ${o.nom}*\n`;
+      msg += `📌 ${o.type.charAt(0).toUpperCase()+o.type.slice(1)}\n`;
+      msg += `📍 ${o.pays}\n`;
+      msg += `⏰ Deadline : ${o.deadline}\n`;
+      msg += `💰 ${o.montant}\n`;
+      msg += `🔗 ${o.lien}\n\n`;
+    });
+    msg += `━━━━━━━━━━━━━━━\n`;
+    msg += `🚀 *Bonne chance dans tes candidatures !*\n\n`;
+    msg += `📢 *Rejoins notre canal bêta-testeurs* pour recevoir les nouvelles opportunités chaque semaine :\n`;
+    msg += `${CONFIG.lienCanal}\n\n`;
+    msg += `_— L'équipe OpporTunité_`;
+  } else {
+    msg += `Nous n'avons pas encore d'opportunités correspondant exactement à ton profil.\n\n`;
+    msg += `Mais rejoins notre canal WhatsApp — on met à jour chaque semaine et tu seras parmi les premiers alertés :\n`;
+    msg += `${CONFIG.lienCanal}\n\n`;
+    msg += `_— L'équipe OpporTunité_`;
+  }
+
+  document.getElementById('wa-btn').href = `https://wa.me/${numNet}?text=${encodeURIComponent(msg)}`;
+  document.getElementById('canal-btn').href = CONFIG.lienCanal;
+
+  const section = document.getElementById('res');
+  section.classList.add('on');
+  setTimeout(() => section.scrollIntoView({behavior:'smooth',block:'start'}), 100);
+}
+</script>
+</body>
+</html>
